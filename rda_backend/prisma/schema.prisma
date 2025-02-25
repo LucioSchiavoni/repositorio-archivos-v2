@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int               @id @default(autoincrement())
+  username       String            @unique
+  name           String?
+  password       String
+  createdAt      DateTime          @default(now())
+  rolUser        RolUser
+  posts          Post[]            @relation("PostAuthor")
+  postPermissions PostPermission[]
+  document Document[]
+}
+
+model Post {
+  id             Int               @id @default(autoincrement())
+  title          String
+  content        String?
+  authorId       Int
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  author         User              @relation("PostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  permissions    PostPermission[]   
+  state StatePost   @default(PUBLIC)              
+  file File[]
+  folder Folder[]
+}
+
+enum StatePost {
+  PUBLIC 
+  PRIVATE
+}
+
+model File {
+  id Int @id @default(autoincrement())
+  postId         Int
+  folderId Int?
+  nameFile String
+  createdAt      DateTime          @default(now())
+  url   String 
+  post           Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
+  folder Folder? @relation(fields: [folderId], references: [id])
+}
+
+model Folder {
+  id Int @id @default(autoincrement())
+  postId Int
+  nameFolder String
+  createdAt      DateTime          @default(now())
+  file File[]
+  post           Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id Int @id @default(autoincrement())
+  authorId Int
+  title String
+  description String? @db.Text
+  createdAt DateTime @default(now())
+  collaborators Collaborators[]
+  author  User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Collaborators {
+  id Int @id @default(autoincrement())
+  documentId Int
+  userId Int
+  name String?
+  document Document @relation(fields: [documentId], references: [id])
+}
+
+model PostPermission {
+  id             Int               @id @default(autoincrement())
+  postId         Int
+  userId         Int
+  permission     Permission        @default(WRITE)
+  post           Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([postId, userId])
+}
+
+enum RolUser {
+  ADMIN
+  USER
+}
+
+enum Permission {
+  READ
+  WRITE
+}

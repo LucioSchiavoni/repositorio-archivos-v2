@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./rda_backend
+      dockerfile: Dockerfile
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    env_file:
+      - ./rda_backend/.env
+    restart: always
+    volumes:
+      - ./rda_backend:/app
+      - /app/node_modules
+
+  frontend:
+    build:
+      context: ./rda_frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    env_file:
+      - ./rda_frontend/.env
+    restart: always
+    depends_on:
+      - backend
+    volumes:
+      - ./rda_frontend:/app
+      - /app/node_modules

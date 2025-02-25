@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Añade estos estilos a tu archivo CSS */
+.tr-button {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .tr-button:hover {
+    background-color: #f0f0f0; /* Cambia el color al pasar el ratón */
+  }
+  
+  .tr-button:active {
+    background-color: #e0e0e0; /* Cambia el color al hacer clic */
+  }
+
