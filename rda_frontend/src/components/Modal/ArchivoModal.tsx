@@ -1,21 +1,11 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-
-} from '@chakra-ui/react'
-
-import { ChangeEvent, useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
+import {  useState, useCallback } from 'react';
+import { FileUp, Loader2 } from "lucide-react"
 import { useForm } from 'react-hook-form';
 import { createFileInFolder, createFileRequest } from '../../api/notas';
 import { toast } from 'react-toastify';
-import { HiOutlineDocumentPlus } from 'react-icons/hi2';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { Button } from '../ui/button';
 
 
 interface ArchivoProps {
@@ -28,6 +18,9 @@ const SubirArchivo: React.FC<ArchivoProps> = ({id, folderId}) => {
 
 
  const {handleSubmit} = useForm()
+ const [isOpen, setIsOpen] = useState(false)
+ const [file, setFile] = useState<File | null>(null)
+ const [isDragging, setIsDragging] = useState(false)
 
  const queryClient = useQueryClient()
 
@@ -39,8 +32,30 @@ const SubirArchivo: React.FC<ArchivoProps> = ({id, folderId}) => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['notas'] })
       toast.success(data.message)
+      setFile(null)
+      setIsOpen(false)
     }
   })
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+  }, [])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+
+    const droppedFile = e.dataTransfer.files[0]
+    if (droppedFile) {
+      setFile(droppedFile)
+    }
+  }, [])
 
   const mutationFile = useMutation({
     mutationFn: createFileRequest,
@@ -50,74 +65,106 @@ const SubirArchivo: React.FC<ArchivoProps> = ({id, folderId}) => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['notas'] })
       toast.success(data.message)
+      setFile(null)
+      setIsOpen(false)
     }
   })
 
-
-
-const [file, setFile] = useState<File | null>(null);
-        const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            const selectedFile = e.target.files[0];
-            setFile(selectedFile);
-        }
-    };
-
-  const handleForm = async () => {
-    try {
-      const formData = new FormData();
-      console.log("Datos here: ", id, folderId)
-      if (file) {
-        formData.append('file[url]', file);
-      }
-      
-      let data;
-      if (folderId) {
-        formData.append('postId', id.toString()); 
-        formData.append('folderId', folderId);
-        data = mutationFileInFolder.mutate(formData)
-      } else {
-        formData.append('id', id.id); 
-        data = mutationFile.mutate(formData)
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error('Error al subir el archivo');
+  
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0])
     }
-  };
+  }, [])
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+    const handleForm = useCallback(async () => {
+      try {
+        const formData = new FormData()
+  
+        if (file) {
+          formData.append("file[url]", file)
+        }
+  
+        if (folderId) {
+          formData.append("postId", id.toString())
+          formData.append("folderId", folderId)
+          mutationFileInFolder.mutate(formData)
+        } else {
+          formData.append("id", id.id)
+          mutationFile.mutate(formData)
+        }
+      } catch (error) {
+        console.error(error)
+        toast.error("Error al subir el archivo")
+      }
+    }, [file, folderId, id, mutationFile, mutationFileInFolder])
+
+    const isLoading = mutationFile.isPending || mutationFileInFolder.isPending
+
   return (
     <>
-      <button onClick={onOpen}  className='px-3 py-1 w-full dark:text-white dark:hover:bg-neutral-800 dark:border-neutral-800  font-semibold  rounded-md  flex items-center justify-center text-center gap-5 dark:bg-neutral-900'>Subir archivo 
-      <span className="text-2xl font-thin "><HiOutlineDocumentPlus/></span>
-      </button>
-
-      <Modal isOpen={isOpen} onClose={onClose} >
-        <ModalOverlay />
-        <ModalContent className='h-64'>
-          <ModalHeader className='text-center'>Subir nuevo archivo 
-      </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody className=' flex justify-center items-center'>
-            <form onSubmit={handleSubmit(handleForm)}>
-                
-            <label htmlFor="dropzone-file" className="flex items-center px-3 py-3 mx-auto  text-center bg-white border-2 border-dashed rounded-lg cursor-pointer dark:border-gray-600 dark:bg-white">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-
-                <h2 className="mx-3 text-gray-400">Subir archivo PDF, Docx, txt, Excel</h2>
-
-                <input id="dropzone-file" type="file" className="hidden" onChange={(e) => handleFileChange(e)} />
-            </label>
-              <button type='submit' className='w-full hover:bg-neutral-800  px-3 py-2 text-xl bg-neutral-900 rounded-md text-white font-semibold mt-10'>Subir</button>
-            </form>
-          </ModalBody>
-
-       
-        </ModalContent>
-      </Modal>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className=" text-xl w-full gap-2 bg-transparent border-none hover:bg-transparent">
+            Subir archivo
+            <FileUp className="h-6 w-6" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-center text-white text-2xl">Subir nuevo archivo</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(handleForm)} className="space-y-6">
+          <div
+            className={`relative flex flex-col items-center justify-center w-full h-64 transition-colors border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 ${
+              isDragging ? "border-primary bg-muted/50" : "border-muted-foreground/25"
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            {isLoading ? (
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Subiendo archivo...</p>
+              </div>
+            ) : (
+              <>
+                <input
+                  id="dropzone-file"
+                  type="file"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  onChange={handleFileChange}
+                  accept=".pdf,.docx,.txt,.xlsx"
+                  disabled={isLoading}
+                />
+                <div className="flex flex-col items-center gap-2">
+                  <FileUp className={`h-8 w-8 ${file ? "text-primary" : "text-muted-foreground"}`} />
+                  {file ? (
+                    <p className="text-sm font-medium">{file.name}</p>
+                  ) : (
+                    <>
+                      <p className="text-xl font-medium text-white">Arrastra y suelta o haz clic para seleccionar</p>
+                      <p className="text-md text-muted-foreground text-white">PDF, DOCX, TXT, Excel</p>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+          <Button type="submit" className="w-full" disabled={!file || isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Subiendo...
+              </>
+            ) : (
+              "Subir archivo"
+            )}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
     </>
   )
 }
