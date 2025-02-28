@@ -17,6 +17,14 @@ export const createNotasRequest = async (data: NotaFormData): Promise<any> => {
     }
 }
 
+export const getAllFilesRequest = async() => {
+    try {
+        const res = await clienteAxios.get("/getFiles")
+        return res.data
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 export const createFolderRequest = async(data:CreateFolder):Promise<any> => {
     try {

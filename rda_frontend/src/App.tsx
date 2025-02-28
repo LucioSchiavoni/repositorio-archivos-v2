@@ -20,6 +20,7 @@ import DocPage from "./pages/DocPage";
 import DocContent from "./components/docs/DocContent";
 import CreateDoc from "./components/docs/CreateDoc";
 import ComingSoon from "./pages/ComingSoon";
+import FilesPage from "./pages/FilesPage";
 
 declare global {
   interface Window {
@@ -43,6 +44,7 @@ const AppContent = () => {
       <Route path="/" element={<Home />} />
       <Route element={<ProtectedRoute isAllowed={isAuth} />}>
       <Route path="/doc" element={<DocPage />} />
+      <Route path="/allFiles" element={<FilesPage/>}  />
       <Route path="/createDoc" element={<CreateDoc />} />
       <Route path="/coming" element={<ComingSoon />} />
       <Route path="/docId/:authorId/:id" element={<DocContent/>} />

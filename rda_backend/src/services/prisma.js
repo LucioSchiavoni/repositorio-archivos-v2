@@ -30,6 +30,19 @@ export const createNotasService = async (data) => {
 };
 
 
+export const getFilesByOrderService = async() => {
+    try {
+        const files = await prisma.file.findMany({
+            orderBy:{
+                createdAt: "desc"
+            }
+        })
+        return files;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export const createCarpetaService = async (dataCarpetas) => {
     
     const {nameFolder, postId} = dataCarpetas;
@@ -55,14 +68,25 @@ export const deleteCarpetaService = async(data) => {
 
     const {postId, folderId} = data;
 
-    const deleteFolder = await prisma.folder.delete({
-        where:{
-            id: parseInt(folderId),
-            postId: parseInt(postId) 
-        }
-    })
+    const deleteFolder = await prisma.$transaction(async (prisma) => {
+        await prisma.file.deleteMany({
+            where: {
+                folderId: parseInt(folderId),
+                postId: parseInt(postId)
+            }
+        });
+
+        return await prisma.folder.delete({
+            where: {
+                id: parseInt(folderId),
+                postId: parseInt(postId)
+            }
+        });
+    });
     return deleteFolder;
 }
+
+
 
 
 
@@ -370,7 +394,7 @@ export const createFileService = async(req, notaId) => {
 
 
     const file = req.file;
-    const uploadFile = file ? `${req.protocol}://${req.hostname}:${process.env.PORT}/upload/${file.filename}` : '';
+    const uploadFile = file ? `${process.env.URL_UPLOAD}:${process.env.PORT}/upload/${file.filename}` : '';
 
     try {
         const newFile = await prisma.file.create({

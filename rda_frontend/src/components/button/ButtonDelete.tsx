@@ -83,14 +83,20 @@ const ButtonDelete: React.FC<PostIdPorps> = ({id, folderId, fileId}) => {
         <ModalContent>
             <ModalHeader>Desea eliminar esta carpeta?</ModalHeader>
             <ModalCloseButton/>
-            <div className="flex gap-3 p-5 mt-8">
-            <button className="px-3 py-1 rounded-md hover:bg-neutral-800 bg-neutral-900 text-white w-24 " onClick={handleDelete}>
+            <div className="flex flex-col gap-3 gap-4 p-6">
+                <div className="flex justify-center mb-4">
+                       <p>Se eliminaran los archivos que se encuentran dentro</p>   
+                </div>
+            <div className="gap-4 flex justify-center">
+                  <button className="px-3 py-1 rounded-md hover:bg-neutral-800 bg-neutral-900 text-white w-24 " onClick={handleDelete}>
             Borrar
         </button>
  
             <button className="px-3 py-1 rounded-md hover:bg-neutral-800 bg-neutral-900 text-white w-24 " onClick={onClose}>
               Cerrar
-            </button>
+            </button> 
+            </div>
+         
 
  
             </div>

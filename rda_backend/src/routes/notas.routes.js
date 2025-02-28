@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createNotas, getNotas, createFile, getNotasById, getSeguimientoById, deleteNota, updateNotas, downloadFile, getNotaByEstado, createCarpeta, createFileByCarpeta, getArchivosByIdCarpeta, deleteCarpeta, deleteFile, deletePost, addCollaboratorsNotasController, getNotasByPermissionController } from "../controllers/notas.controller.js";
+import { createNotas, getNotas, createFile, getNotasById, getSeguimientoById, deleteNota, updateNotas, downloadFile, getNotaByEstado, createCarpeta, createFileByCarpeta, getArchivosByIdCarpeta, deleteCarpeta, deleteFile, deletePost, addCollaboratorsNotasController, getNotasByPermissionController, getFilesByOrder } from "../controllers/notas.controller.js";
 import upload from "../middlewares/uploadFile.js";
 
 
@@ -17,6 +17,7 @@ notasRouter.get("/seguimiento/:id", getSeguimientoById)
 notasRouter.delete("/deleteNota/:id", deleteNota)
 notasRouter.put("/updateNota/:id", updateNotas)
 notasRouter.get("/download/:id", downloadFile)
+notasRouter.get("/getFiles", getFilesByOrder)
 
 notasRouter.get("/nota/estado/:estado", getNotaByEstado)
 notasRouter.post("/create/folder", createCarpeta)
