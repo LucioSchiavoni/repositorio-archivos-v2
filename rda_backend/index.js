@@ -4,6 +4,7 @@ import notasRouter from './src/routes/notas.routes.js'
 import userRouter from './src/routes/user.routes.js'
 import dotenv from 'dotenv'
 import docRouter from './src/routes/doc.routes.js'
+import './src/script/seed.js'
 
 dotenv.config()
 

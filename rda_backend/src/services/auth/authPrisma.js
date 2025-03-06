@@ -21,7 +21,7 @@ export const registerService = async (req,res) => {
         }
         const salt = bcrypt.genSaltSync(10);
         const hashPassword =  bcrypt.hashSync(password, salt)
-        const newUser =  await prisma.user.create({
+            await prisma.user.create({
             data:{
                 username: username,
                 name: name,
