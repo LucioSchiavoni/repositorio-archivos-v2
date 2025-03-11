@@ -78,6 +78,35 @@ const ButtonDelete: React.FC<PostIdPorps> = ({id, folderId, fileId}) => {
                 <p>Eliminar carpeta</p>
             }
         </button>
+        {
+            !folderId ? 
+
+            <Modal  isCentered onClose={onClose} isOpen={isOpen} motionPreset='slideInBottom'>
+        <ModalOverlay/>
+        <ModalContent>
+            <ModalHeader>Desea eliminar este archivo?</ModalHeader>
+            <ModalCloseButton/>
+            <div className="flex flex-col gap-3 gap-4 p-6">
+
+            <div className="gap-4 flex justify-center">
+                  <button className="px-3 py-1 rounded-md hover:bg-neutral-800 bg-neutral-900 text-white w-24 " onClick={handleDelete}>
+            Borrar
+        </button>
+ 
+            <button className="px-3 py-1 rounded-md hover:bg-neutral-800 bg-neutral-900 text-white w-24 " onClick={onClose}>
+              Cerrar
+            </button> 
+            </div>
+         
+
+ 
+            </div>
+       
+         </ModalContent>
+        </Modal>
+        
+        :
+       
         <Modal  isCentered onClose={onClose} isOpen={isOpen} motionPreset='slideInBottom'>
         <ModalOverlay/>
         <ModalContent>
@@ -103,7 +132,7 @@ const ButtonDelete: React.FC<PostIdPorps> = ({id, folderId, fileId}) => {
        
          </ModalContent>
         </Modal>
-        
+         }
     </div>
   )
 }

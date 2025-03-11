@@ -6,6 +6,7 @@ import { Link } from "react-router-dom"
 import {  SimpleGrid, Spinner, Tooltip } from "@chakra-ui/react"
 import DateFormat from "../components/utils/DateFormat"
 import AddCollaborators from "../components/Modal/AddCollaborators"
+import ButtonDeleteDoc from "../components/button/ButtonDeleteDoc"
 
 
 
@@ -81,10 +82,15 @@ if(!data ||data.length === 0) return (
             </div>
         </article>
     </Link>
+    <div className="bg-white">
+    <p className="text-red-800 font-semibold capitalize text-center"><ButtonDeleteDoc id={item.id}/></p>  
+    </div>
     <div className="bg-slate-100 w-full">
                     <AddCollaborators documentId={item.id}/>
                 </div>
+   
     </div>
+    
 ))}
 </SimpleGrid>
     </Layout>
