@@ -58,9 +58,6 @@ const ButtonDeleteDoc: React.FC<DocIdProps> = ({id}) => {
               Cerrar
             </button> 
             </div>
-         
-
- 
             </div>
        
          </ModalContent>

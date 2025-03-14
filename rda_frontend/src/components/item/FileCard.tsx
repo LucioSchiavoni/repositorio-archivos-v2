@@ -8,6 +8,8 @@ import excel from "../../assets/excel.png"
 import pdf from '../../assets/pdf.png'
 import txt from '../../assets/txt.png'
 import rar from '../../assets/rar.png'
+import image from '../../assets/image.png'
+import video from '../../assets/video.png'
 // import exe from '../../assets/exe.png'
 
 
@@ -44,7 +46,15 @@ const FileCard: React.FC<CardProps> = ({id, idPost, nameFile, createdAt, key}) =
   :
   fileExtension === "rar" ? 
   ( srcFile = rar )
-  
+  :
+  fileExtension === "png" ?
+  ( srcFile = image )
+  :
+  fileExtension === "jpg" ?
+  ( srcFile = image )
+  :
+  fileExtension === "mp4" ?
+  ( srcFile = video )
   :
   null
 

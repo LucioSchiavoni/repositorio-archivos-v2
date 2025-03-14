@@ -88,7 +88,7 @@ const Navbar = () => {
      
     </nav>
 
-    <div className="flex flex-col space-y-6 mt-auto">
+    <div className="absolute bottom-0 mb-4">
 
             <div className="flex flex-col items-center mt-4 space-y-4 ">
         <Tooltip label="Salir" aria-label="A tooltip">
